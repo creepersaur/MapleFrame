@@ -46,7 +46,7 @@ impl Widget for Text {
         "text"
     }
 
-    fn update(&mut self, other: Option<&mut dyn Widget>, _: Vec2) -> Vec2 {
+    fn update(&mut self, other: Option<&mut dyn Widget>, _: Vec2, _: bool) -> Vec2 {
 		let dim = measure_text(&self.text, self.font.as_ref(), match self.font.is_some() {
 			true => 12,
 			_ => 16

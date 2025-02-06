@@ -24,7 +24,7 @@ impl WidgetHolder {
         self.widgets.clear();
     }
 
-    pub fn update(&mut self, mut pos: Vec2) {
+    pub fn update(&mut self, mut pos: Vec2, selected: bool) {
         self.positions.clear();
         let margin = 5.;
         for i in 0..self.widgets.len() {
@@ -32,12 +32,12 @@ impl WidgetHolder {
                 let old = &mut self.previous[i];
                 if self.widgets[i].get_type() == old.get_type() {
                     self.positions.push(pos);
-                    pos += self.fill_direction * old.update(Some(&mut *self.widgets[i]), pos);
+                    pos += self.fill_direction * old.update(Some(&mut *self.widgets[i]), pos, selected);
                     self.widgets[i] = old.clone();
                 }
             } else {
                 self.positions.push(pos);
-                pos += self.fill_direction * self.widgets[i].update(None, pos);
+                pos += self.fill_direction * self.widgets[i].update(None, pos, selected);
             }
             pos += self.fill_direction * margin;
         }

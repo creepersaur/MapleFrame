@@ -3,21 +3,25 @@ use macroquad::prelude::*;
 use std::any::Any;
 
 pub use button::Button;
+pub use indent::Indent;
+pub use separator::Separator;
 pub use text::Text;
 pub use widget_holder::WidgetHolder;
 pub use widget_row::WidgetRow;
 
 mod button;
+mod indent;
+mod separator;
 mod text;
-mod widget_row;
 mod widget_holder;
+mod widget_row;
 
 // WIDGET
 pub trait Widget: WidgetClone + Any {
     fn render(&mut self, pos: Vec2, delta: Vec2, style: &WindowStyle);
     fn get_type(&self) -> &str;
     fn as_any(&mut self) -> &mut dyn Any;
-    fn update(&mut self, other: Option<&mut dyn Widget>, pos: Vec2) -> Vec2;
+    fn update(&mut self, other: Option<&mut dyn Widget>, pos: Vec2, selected: bool) -> Vec2;
 }
 
 pub trait WidgetClone {

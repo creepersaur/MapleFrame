@@ -14,6 +14,23 @@ impl WidgetRow {
             font,
         }
     }
+
+	pub fn add_widget<T: Widget>(&mut self, object: T) -> &mut T {
+        let b = Box::new(object);
+        let x = self.widget_holder.add_widget(b);
+
+        if x < self.widget_holder.previous.len() && self.widget_holder.previous.len() > 0 {
+            return self.widget_holder.previous[x]
+                .as_any()
+                .downcast_mut::<T>()
+                .unwrap();
+        } else {
+            return self.widget_holder.widgets[x]
+                .as_any()
+                .downcast_mut::<T>()
+                .unwrap();
+        }
+	}
 }
 
 impl Widget for WidgetRow {
@@ -30,8 +47,8 @@ impl Widget for WidgetRow {
         self.widget_holder.render(style, delta);
     }
 
-    fn update(&mut self, _: Option<&mut dyn Widget>, pos: Vec2) -> Vec2 {
-        self.widget_holder.update(pos);
+    fn update(&mut self, _: Option<&mut dyn Widget>, pos: Vec2, selected: bool) -> Vec2 {
+        self.widget_holder.update(pos, selected);
 
         Vec2::Y * 16.
     }
@@ -39,38 +56,18 @@ impl Widget for WidgetRow {
 
 impl WidgetRow {
     pub fn text(&mut self, text: impl ToString) -> &mut Text {
-        type T = Text;
-        let b = Box::new(T::new(text, self.font.clone()));
-        let x = self.widget_holder.add_widget(b);
-
-        if x < self.widget_holder.previous.len() && self.widget_holder.previous.len() > 0 {
-            return self.widget_holder.previous[x]
-                .as_any()
-                .downcast_mut::<T>()
-                .unwrap();
-        } else {
-            return self.widget_holder.widgets[x]
-                .as_any()
-                .downcast_mut::<T>()
-                .unwrap();
-        }
+        self.add_widget(Text::new(text, self.font.clone()))
     }
 
     pub fn button(&mut self, text: impl ToString) -> &mut Button {
-        type T = Button;
-        let b = Box::new(T::new(text, self.font.clone()));
-        let x = self.widget_holder.add_widget(b);
-
-        if x < self.widget_holder.previous.len() && self.widget_holder.previous.len() > 0 {
-            return self.widget_holder.previous[x]
-                .as_any()
-                .downcast_mut::<T>()
-                .unwrap();
-        } else {
-            return self.widget_holder.widgets[x]
-                .as_any()
-                .downcast_mut::<T>()
-                .unwrap();
-        }
+        self.add_widget(Button::new(text, self.font.clone()))
     }
+
+	pub fn separator(&mut self) -> &mut Separator {
+        self.add_widget(Separator::new(Vec2::Y, 20.))
+    }
+
+	pub fn indent(&mut self, spacing: f32) -> &mut Indent {
+		self.add_widget(Indent::new(spacing))
+	}
 }

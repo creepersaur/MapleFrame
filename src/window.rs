@@ -43,7 +43,7 @@ impl Window {
             selected: false,
             dragging: false,
             widget_holder: WidgetHolder::new(Vec2::Y),
-            time_since_selected: 0.0,
+            time_since_selected: get_time(),
             delta: Vec2::ZERO,
             resize_start: (Vec2::ZERO, Vec2::ZERO),
             font: font,
@@ -176,7 +176,6 @@ impl Window {
     }
 
     pub fn draw_widgets(&mut self) {
-		println!("{}", self.delta);
         self.widget_holder.render(&self.style, self.delta);
     }
 
@@ -285,6 +284,8 @@ impl Window {
 
         if selected {
             self.selected = false;
+            self.delta = vec2(self.rect.x, self.rect.y) - self.delta;
+            self.widget_holder.add_delta_position(self.delta);
             return;
         }
 
@@ -413,9 +414,8 @@ impl Window {
 ////////////////////////////////////////
 
 impl Window {
-    pub fn text(&mut self, text: impl ToString) -> &mut Text {
-        type T = Text;
-        let b = Box::new(T::new(text, self.font.clone()));
+    pub fn add_widget<T: Widget>(&mut self, object: T) -> &mut T {
+        let b = Box::new(object);
         let x = self.widget_holder.add_widget(b);
 
         if x < self.widget_holder.previous.len() && self.widget_holder.previous.len() > 0 {
@@ -429,45 +429,32 @@ impl Window {
                 .downcast_mut::<T>()
                 .unwrap();
         }
+    }
+
+    pub fn text(&mut self, text: impl ToString) -> &mut Text {
+        self.add_widget(Text::new(text, self.font.clone()))
     }
 
     pub fn button(&mut self, text: impl ToString) -> &mut Button {
-        type T = Button;
-        let b = Box::new(T::new(text, self.font.clone()));
-        let x = self.widget_holder.add_widget(b);
-
-        if x < self.widget_holder.previous.len() && self.widget_holder.previous.len() > 0 {
-            return self.widget_holder.previous[x]
-                .as_any()
-                .downcast_mut::<T>()
-                .unwrap();
-        } else {
-            return self.widget_holder.widgets[x]
-                .as_any()
-                .downcast_mut::<T>()
-                .unwrap();
-        }
+        self.add_widget(Button::new(text, self.font.clone()))
     }
 
-    pub fn row(&mut self) -> &mut WidgetRow {
-        type T = WidgetRow;
-        let b = Box::new(T::new(self.font.clone()));
-        let x = self.widget_holder.add_widget(b);
-
-        if x < self.widget_holder.previous.len() && self.widget_holder.previous.len() > 0 {
-            let x = self.widget_holder.previous[x]
-                .as_any()
-                .downcast_mut::<T>()
-                .unwrap();
-            x.widget_holder.clear();
-            return x;
-        } else {
-            return self.widget_holder.widgets[x]
-                .as_any()
-                .downcast_mut::<T>()
-                .unwrap();
-        }
+	pub fn separator(&mut self) -> &mut Separator {
+        self.add_widget(Separator::new(Vec2::X, self.rect.w))
     }
+
+    pub fn row(&mut self, mut handler: impl FnMut(&mut WidgetRow)) {
+        let x = self.add_widget(WidgetRow::new(self.font.clone()));
+        x.widget_holder.clear();
+        handler(x);
+    }
+
+	pub fn indent(&mut self, spacing: f32, mut handler: impl FnMut(&mut WidgetRow)) {
+		let x = self.add_widget(WidgetRow::new(self.font.clone()));
+        x.widget_holder.clear();
+		x.add_widget(Indent::new(spacing));
+        handler(x);
+	}
 }
 
 ////////////////////////////////////////

@@ -10,6 +10,8 @@ pub struct Button {
     pub pressed: bool,
     pub clicked: bool,
     pub font: Option<Font>,
+
+	tried_clicking: bool
 }
 
 impl Button {
@@ -17,6 +19,7 @@ impl Button {
         Self {
             text: text.to_string(),
             font,
+			tried_clicking: false,
 
             hovering: false,
             pressed: false,
@@ -78,7 +81,7 @@ impl Widget for Button {
         );
     }
 
-    fn update(&mut self, other: Option<&mut dyn Widget>, pos: Vec2) -> Vec2 {
+    fn update(&mut self, other: Option<&mut dyn Widget>, pos: Vec2, selected: bool) -> Vec2 {
         if let Some(other) = other {
             let new = other.as_any().downcast_mut::<Self>().unwrap();
             self.text = new.text.clone();
@@ -88,12 +91,22 @@ impl Widget for Button {
         let dim = measure_text(&self.text, self.font.as_ref(), 16, 1.);
         let rect = Rect::new(pos.x, pos.y, dim.width + 10., 20.);
 
+		if self.tried_clicking && selected {
+			self.tried_clicking = false;
+			self.pressed = true;
+		}
+
         self.clicked = false;
         if rect.contains(mouse_position().into()) {
             self.hovering = true;
             if is_mouse_button_pressed(MouseButton::Left) && !self.pressed {
-                self.pressed = true;
-            } else if is_mouse_button_released(MouseButton::Left) && self.pressed {
+                if selected {
+					self.pressed = true;
+					self.tried_clicking = false;
+				} else {
+					self.tried_clicking = true;
+				}
+            } else if is_mouse_button_released(MouseButton::Left) && self.pressed && selected {
                 self.clicked = true;
             }
         } else {
