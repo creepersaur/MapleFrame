@@ -68,7 +68,7 @@ impl Window {
 
     pub fn set_position(&mut self, position: (f32, f32)) {
         self.rect.x = position.0;
-        self.rect.y = position.0
+        self.rect.y = position.1
     }
 
     pub fn set_size(&mut self, size: (f32, f32)) {
