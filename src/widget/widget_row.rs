@@ -78,8 +78,10 @@ impl Widget for WidgetRow {
 		if let Some(other) = other {
             let new = other.as_any().downcast_ref::<Self>().unwrap();
             self.offset = new.offset.clone();
+			self.direction = new.direction;
         }
 
+		self.widget_holder.fill_direction = self.direction;
         let pos = self.widget_holder.update(pos + self.offset, selected);
 		
         if self.direction == Vec2::Y {

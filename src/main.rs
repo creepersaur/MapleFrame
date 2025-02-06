@@ -28,7 +28,7 @@ async fn main() {
 
             if t1 {
                 win.indent(24., |indent| {
-                    for i in 1..2 {
+                    for i in 1..5 {
                         indent.button(format!("Object{i}"));
                     }
                 });
@@ -51,7 +51,7 @@ async fn main() {
 
             if t2 {
                 win.indent(24., |indent| {
-                    for i in 1..2 {
+                    for i in 1..5 {
                         indent.button(format!("Object{i}"));
                     }
                 });
