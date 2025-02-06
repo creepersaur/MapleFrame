@@ -8,7 +8,6 @@ async fn main() {
     loop {
         windows.begin("Debug", |win| {
 			win.text("Hello world");
-			win.button("Press me!");
         });
 
         windows.end_windows();
