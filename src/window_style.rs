@@ -15,6 +15,8 @@ pub struct WindowStyle {
     pub button_bg_color: Color,
     pub button_text_color: Color,
     pub button_outline_color: Color,
+	pub checkbox_checked: Color,
+	
 	pub indent_color: Color,
 }
 
@@ -22,6 +24,7 @@ impl WindowStyle {
     pub fn maple() -> Self {
         Self {
             titlebar: Color::from_hex(0x781D1D),
+            checkbox_checked: Color::from_hex(0x781D1D),
             selected_outline: Color::from_hex(0xff4444),
             resize_triangle: Color::from_hex(0x5C0E0E),
             button_bg_color: Color::from_hex(0x781D1D),
@@ -46,7 +49,8 @@ impl Default for WindowStyle {
 
             button_bg_color: Color::from_hex(0x294a7a),
             button_text_color: WHITE,
-            button_outline_color: GRAY,
+            button_outline_color: DARKGRAY,
+			checkbox_checked: Color::from_rgba(70, 140, 210, 255),
 
 			indent_color: Color::new(1.,1.,1.,0.1),
         }

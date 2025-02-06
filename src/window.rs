@@ -1,4 +1,6 @@
 #![allow(unused)]
+use std::any::Any;
+
 use crate::{widget::*, window_style::WindowStyle};
 use macroquad::prelude::*;
 
@@ -61,6 +63,10 @@ impl Window {
             no_titlebar: false,
         }
     }
+
+	pub fn is_once(&mut self) -> bool {
+		self.once
+	}
 
     pub fn set_title(&mut self, title: impl ToString) {
         self.title = title.to_string();
@@ -443,24 +449,28 @@ impl Window {
         self.add_widget(Button::new(text, self.font.clone()))
     }
 
+	pub fn checkbox(&mut self, text: impl ToString, initial_checked: bool) -> &mut CheckBox {
+        self.add_widget(CheckBox::new(text, self.font.clone(), initial_checked))
+    }
+
     pub fn separator(&mut self) -> &mut Separator {
         self.add_widget(Separator::new(Vec2::X, self.rect.w))
     }
 
-    pub fn row(&mut self, mut handler: impl FnMut(&mut WidgetRow)) {
+    pub fn row<R>(&mut self, mut handler: impl FnMut(&mut WidgetRow) -> R) -> R {
         let x = self.add_widget(WidgetRow::new(Vec2::X, self.font.clone(), Vec2::ZERO));
         x.widget_holder.clear();
-        handler(x);
+        handler(x)
     }
 
-    pub fn indent(&mut self, spacing: f32, mut handler: impl FnMut(&mut WidgetRow)) {
+    pub fn indent<R>(&mut self, spacing: f32, mut handler: impl FnMut(&mut WidgetRow) -> R) -> R {
         let x = self.add_widget(WidgetRow::new(
             Vec2::Y,
             self.font.clone(),
             Vec2::X * spacing,
         ));
         x.widget_holder.clear();
-        handler(x);
+        handler(x)
     }
 }
 

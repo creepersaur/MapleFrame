@@ -3,12 +3,14 @@ use macroquad::prelude::*;
 use std::any::Any;
 
 pub use button::Button;
+pub use checkbox::CheckBox;
 pub use separator::Separator;
 pub use text::Text;
 pub use widget_holder::WidgetHolder;
 pub use widget_row::WidgetRow;
 
 mod button;
+mod checkbox;
 mod separator;
 mod text;
 mod widget_holder;

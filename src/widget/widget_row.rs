@@ -52,9 +52,6 @@ impl Widget for WidgetRow {
     }
 
     fn render(&mut self, pos: Vec2, delta: Vec2, style: &WindowStyle) {
-		self.widget_holder.add_delta_position(delta);
-        self.widget_holder.render(style, delta);
-
 		// VERTICAL LINE
 		draw_rectangle(
 			(pos.x + self.offset.x - 15.),
@@ -72,6 +69,9 @@ impl Widget for WidgetRow {
 			2.,
 			style.indent_color
 		);
+
+		self.widget_holder.add_delta_position(delta);
+        self.widget_holder.render(style, delta);
     }
 
     fn update(&mut self, other: Option<&mut dyn Widget>, pos: Vec2, selected: bool) -> Vec2 {
@@ -119,5 +119,9 @@ impl WidgetRow {
         ));
         x.widget_holder.clear();
         handler(x);
+    }
+
+	pub fn checkbox(&mut self, text: impl ToString, initial_checked: bool) -> &mut CheckBox {
+        self.add_widget(CheckBox::new(text, self.font.clone(), initial_checked))
     }
 }

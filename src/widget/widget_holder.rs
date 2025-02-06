@@ -20,34 +20,40 @@ impl WidgetHolder {
     }
 
     pub fn clear(&mut self) {
-		if !self.widgets.is_empty() {
-			self.previous = self.widgets.clone();
-		}
-		self.widgets.clear();
-	}
+        self.previous = self.widgets.clone();
+        self.widgets.clear();
+    }
 
     pub fn update(&mut self, mut pos: Vec2, selected: bool) -> Vec2 {
         let old_pos = pos.clone();
-		
-		self.positions.clear();
-        let margin = 5.;
 
-        for i in 0..self.widgets.len() {
-            if self.previous.len() >= self.widgets.len() {
+        self.positions.clear();
+        let margin = 5.;
+        let mut i = 0;
+
+        loop {
+            if i >= self.widgets.len() {
+                break;
+            }
+            if self.previous.len() > i {
                 let old = &mut self.previous[i];
+
                 if self.widgets[i].get_type() == old.get_type() {
                     self.positions.push(pos);
-                    pos += self.fill_direction * old.update(Some(&mut *self.widgets[i]), pos, selected);
+                    pos += self.fill_direction
+                        * old.update(Some(&mut *self.widgets[i]), pos, selected);
                     self.widgets[i] = old.clone();
                 }
             } else {
                 self.positions.push(pos);
                 pos += self.fill_direction * self.widgets[i].update(None, pos, selected);
             }
+
             pos += self.fill_direction * margin;
+            i += 1;
         }
 
-		pos - old_pos
+        pos - old_pos
     }
 
     pub fn render(&mut self, style: &WindowStyle, delta: Vec2) {
