@@ -11,7 +11,7 @@ pub struct Button {
     pub clicked: bool,
     pub font: Option<Font>,
 
-	tried_clicking: bool
+    tried_clicking: bool,
 }
 
 impl Button {
@@ -19,7 +19,7 @@ impl Button {
         Self {
             text: text.to_string(),
             font,
-			tried_clicking: false,
+            tried_clicking: false,
 
             hovering: false,
             pressed: false,
@@ -38,7 +38,15 @@ impl Widget for Button {
     }
 
     fn render(&mut self, pos: Vec2, _: Vec2, style: &WindowStyle) {
-        let dim = measure_text(&self.text, self.font.as_ref(), 16, 1.);
+        let dim = measure_text(
+            &self.text,
+            self.font.as_ref(),
+            match self.font.is_some() {
+                true => 12,
+                _ => 16,
+            },
+            1.,
+        );
         let btn_color = style.button_bg_color;
 
         draw_rectangle(
@@ -67,14 +75,14 @@ impl Widget for Button {
 
         draw_text_ex(
             &self.text,
-            pos.x.floor() + 5.,
+            pos.x + 5.,
             pos.y.floor() + 14.,
             TextParams {
                 font: self.font.as_ref(),
                 font_size: match self.font.is_some() {
-					true => 12,
-					_ => 16
-				},
+                    true => 12,
+                    _ => 16,
+                },
                 color: style.button_text_color,
                 ..Default::default()
             },
@@ -88,24 +96,32 @@ impl Widget for Button {
             (*new).clicked = self.clicked;
         }
 
-        let dim = measure_text(&self.text, self.font.as_ref(), 16, 1.);
+        let dim = measure_text(
+            &self.text,
+            self.font.as_ref(),
+            match self.font.is_some() {
+                true => 12,
+                _ => 16,
+            },
+            1.,
+        );
         let rect = Rect::new(pos.x, pos.y, dim.width + 10., 20.);
 
-		if self.tried_clicking && selected {
-			self.tried_clicking = false;
-			self.pressed = true;
-		}
+        if self.tried_clicking && selected {
+            self.tried_clicking = false;
+            self.pressed = true;
+        }
 
         self.clicked = false;
         if rect.contains(mouse_position().into()) {
             self.hovering = true;
             if is_mouse_button_pressed(MouseButton::Left) && !self.pressed {
                 if selected {
-					self.pressed = true;
-					self.tried_clicking = false;
-				} else {
-					self.tried_clicking = true;
-				}
+                    self.pressed = true;
+                    self.tried_clicking = false;
+                } else {
+                    self.tried_clicking = true;
+                }
             } else if is_mouse_button_released(MouseButton::Left) && self.pressed && selected {
                 self.clicked = true;
             }

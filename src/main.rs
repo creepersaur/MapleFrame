@@ -4,6 +4,7 @@ use mapleframe::prelude::*;
 #[macroquad::main("MapleFrame")]
 async fn main() {
     let mut windows = WindowManager::new();
+	windows.set_font("src/segoe_ui.TTF").await;
     let mut t1 = false;
     let mut t2 = false;
     let mut t3 = false;
@@ -111,6 +112,12 @@ async fn main() {
             if win.checkbox("hello", false).checked {
                 win.text("hello");
             }
+
+			win.button("abc");
+			win.button("abcdefg");
+			win.button("abcdefghjkl");
+			win.button("abcdefghjklmnopq");
+			win.button("abcdefghjklmnopqrstuvxyz");
         });
 
         windows.begin("output", |win| {
