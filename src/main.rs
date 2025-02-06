@@ -4,7 +4,8 @@ use mapleframe::prelude::*;
 #[macroquad::main("MapleFrame")]
 async fn main() {
     let mut windows = WindowManager::new();
-    let mut toggle = false;
+    let mut t1 = false;
+    let mut t2 = false;
 
     loop {
         windows.begin("explorer", |win| {
@@ -12,29 +13,57 @@ async fn main() {
             win.set_size((250., 300.));
             bald(win);
 
-            win.text("Hello");
-            win.separator();
-            win.text("Hello");
+            win.row(|row| {
+                if row
+                    .button(match t1 {
+                        true => "\\/",
+                        false => ">",
+                    })
+                    .clicked
+                {
+                    t1 = !t1
+                }
+                row.text("workspace");
+            });
+
+            if t1 {
+                win.indent(24., |indent| {
+                    for i in 1..2 {
+                        indent.button(format!("Object{i}"));
+                    }
+                });
+            }
+
             win.separator();
 
             win.row(|row| {
-				row.text("Toggle on:");
-                if row.button(toggle).clicked {
-                    toggle = !toggle;
+                if row
+                    .button(match t2 {
+                        true => "\\/",
+                        false => ">",
+                    })
+                    .clicked
+                {
+                    t2 = !t2
                 }
+                row.text("workspace");
             });
 
-			win.indent(20., |indent| {
-				indent.text("Hello world");
-				indent.indent(20.);
-				indent.text("Hello world");
-			});
+            if t2 {
+                win.indent(24., |indent| {
+                    for i in 1..2 {
+                        indent.button(format!("Object{i}"));
+                    }
+                });
+            }
         });
 
         windows.begin("properties", |win| {
             win.set_position((0., 300.));
             win.set_size((250., 300.));
             bald(win);
+
+            win.separator();
 
             win.row(|row| {
                 row.text("Order:");
@@ -46,11 +75,13 @@ async fn main() {
             win.separator();
 
             win.row(|row| {
-            row.text("Order:");
-            row.button("Burger");
-            row.separator();
-            row.button("Nuggets");
-		});
+                row.text("Order:");
+                row.button("Burger");
+                row.separator();
+                row.button("Nuggets");
+            });
+
+            win.separator();
         });
 
         windows.begin("output", |win| {

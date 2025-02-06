@@ -3,14 +3,12 @@ use macroquad::prelude::*;
 use std::any::Any;
 
 pub use button::Button;
-pub use indent::Indent;
 pub use separator::Separator;
 pub use text::Text;
 pub use widget_holder::WidgetHolder;
 pub use widget_row::WidgetRow;
 
 mod button;
-mod indent;
 mod separator;
 mod text;
 mod widget_holder;

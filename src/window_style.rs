@@ -15,6 +15,7 @@ pub struct WindowStyle {
     pub button_bg_color: Color,
     pub button_text_color: Color,
     pub button_outline_color: Color,
+	pub indent_color: Color,
 }
 
 impl WindowStyle {
@@ -46,6 +47,8 @@ impl Default for WindowStyle {
             button_bg_color: Color::from_hex(0x294a7a),
             button_text_color: WHITE,
             button_outline_color: GRAY,
+
+			indent_color: Color::new(1.,1.,1.,0.1),
         }
     }
 }

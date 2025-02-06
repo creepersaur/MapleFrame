@@ -419,10 +419,14 @@ impl Window {
         let x = self.widget_holder.add_widget(b);
 
         if x < self.widget_holder.previous.len() && self.widget_holder.previous.len() > 0 {
-            return self.widget_holder.previous[x]
-                .as_any()
-                .downcast_mut::<T>()
-                .unwrap();
+            if let Some(x) = self.widget_holder.previous[x].as_any().downcast_mut::<T>() {
+                return x;
+            } else {
+                return self.widget_holder.widgets[x]
+                    .as_any()
+                    .downcast_mut::<T>()
+                    .unwrap();
+            }
         } else {
             return self.widget_holder.widgets[x]
                 .as_any()
@@ -439,22 +443,25 @@ impl Window {
         self.add_widget(Button::new(text, self.font.clone()))
     }
 
-	pub fn separator(&mut self) -> &mut Separator {
+    pub fn separator(&mut self) -> &mut Separator {
         self.add_widget(Separator::new(Vec2::X, self.rect.w))
     }
 
     pub fn row(&mut self, mut handler: impl FnMut(&mut WidgetRow)) {
-        let x = self.add_widget(WidgetRow::new(self.font.clone()));
+        let x = self.add_widget(WidgetRow::new(Vec2::X, self.font.clone(), Vec2::ZERO));
         x.widget_holder.clear();
         handler(x);
     }
 
-	pub fn indent(&mut self, spacing: f32, mut handler: impl FnMut(&mut WidgetRow)) {
-		let x = self.add_widget(WidgetRow::new(self.font.clone()));
+    pub fn indent(&mut self, spacing: f32, mut handler: impl FnMut(&mut WidgetRow)) {
+        let x = self.add_widget(WidgetRow::new(
+            Vec2::Y,
+            self.font.clone(),
+            Vec2::X * spacing,
+        ));
         x.widget_holder.clear();
-		x.add_widget(Indent::new(spacing));
         handler(x);
-	}
+    }
 }
 
 ////////////////////////////////////////
