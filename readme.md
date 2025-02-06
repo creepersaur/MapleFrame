@@ -82,9 +82,9 @@ async fn main() {
 }
 ```
 
-# Making it look like Dear Imgui
+# Making it look Maple
 
-If you want MapleFrame to look like DearImgui, you can use `WindowStyle::imgui()` to get a DearImgui styled window:
+If you want MapleFrame to look like red maple. Just use `WindowStyle::maple()`. (It uses DearImgui Style by default).
 
 ```rs
 use macroquad::prelude::*;

@@ -176,6 +176,7 @@ impl Window {
     }
 
     pub fn draw_widgets(&mut self) {
+		println!("{}", self.delta);
         self.widget_holder.render(&self.style, self.delta);
     }
 

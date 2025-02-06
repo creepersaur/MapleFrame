@@ -18,13 +18,13 @@ pub struct WindowStyle {
 }
 
 impl WindowStyle {
-    pub fn imgui() -> Self {
+    pub fn maple() -> Self {
         Self {
-            outline: GRAY,
-            selected_outline: LIGHTGRAY,
-            titlebar: Color::from_rgba(41, 74, 122, 255),
-            resize_triangle: Color::from_rgba(41, 150, 255, 75),
-            button_bg_color: Color::from_hex(0x294a7a),
+            titlebar: Color::from_hex(0x781D1D),
+            selected_outline: Color::from_hex(0xff4444),
+            resize_triangle: Color::from_hex(0x5C0E0E),
+            button_bg_color: Color::from_hex(0x781D1D),
+
             ..Default::default()
         }
     }
@@ -35,15 +35,15 @@ impl Default for WindowStyle {
         Self {
             background: Color::from_hex(0x151617),
             title: WHITE,
-            titlebar: Color::from_hex(0x781D1D),
-            outline: DARKGRAY,
-            selected_outline: Color::from_hex(0xff4444),
+            titlebar: Color::from_rgba(41, 74, 122, 255),
+            outline: GRAY,
+            selected_outline: LIGHTGRAY,
 
-            resize_triangle: Color::from_hex(0x5C0E0E),
+            resize_triangle: Color::from_rgba(41, 150, 255, 75),
             minimize_triangle: Color::from_rgba(255, 255, 255, 210),
             close_button: WHITE,
 
-            button_bg_color: Color::from_hex(0x781D1D),
+            button_bg_color: Color::from_hex(0x294a7a),
             button_text_color: WHITE,
             button_outline_color: GRAY,
         }
