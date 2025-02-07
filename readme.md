@@ -4,6 +4,8 @@ An easy to use ImmediateMode gui library for Rust.
 
 Uses macroquad as a backend. Inspired by Dear Imgui.
 (This is the remaster of `AmberWindow` which is broken and discontinued.)
+> State persist issues may occur and UI is prone to sorting errors. These will get fixed hopefully in later versions.
+> Please report issues with the library on the github issues page.
 
 ## Supported Platforms
 

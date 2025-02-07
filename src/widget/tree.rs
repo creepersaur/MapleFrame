@@ -12,7 +12,7 @@ pub struct Tree {
     pub open: bool,
     pub font: Option<Font>,
     pub widget_row: WidgetRow,
-	pub length: f32,
+    pub length: f32,
 
     tried_clicking: bool,
 }
@@ -23,13 +23,13 @@ impl Tree {
             text: text.to_string(),
             font: font.clone(),
             tried_clicking: false,
-			length,
+            length,
 
             hovering: false,
             pressed: false,
             clicked: false,
             open: default,
-            widget_row: WidgetRow::new(Vec2::Y, font, Vec2::X * 24.),
+            widget_row: WidgetRow::new(Vec2::Y, font, Vec2::X * 24., length),
         }
     }
 }
@@ -44,11 +44,11 @@ impl Widget for Tree {
     }
 
     fn render(&mut self, pos: Vec2, delta: Vec2, style: &WindowStyle) {
-		// DRAW ROW
+        // DRAW ROW
         if self.open {
             self.widget_row.render(pos + Vec2::Y * 20., delta, style);
         }
-		
+
         let btn_color = style.tree_closed;
         let open_color = style.tree_open;
 
@@ -99,14 +99,14 @@ impl Widget for Tree {
         if let Some(other) = other {
             let new = other.as_any().downcast_mut::<Self>().unwrap();
             self.text = new.text.clone();
+			new.widget_row = self.widget_row.clone();
 
             // UPDATE ROW
             if self.open {
-                height += self.widget_row.update(
-                    Some(&mut new.widget_row),
-                    pos + Vec2::Y * 20.,
-                    selected,
-                ).y;
+                height += self
+                    .widget_row
+                    .update(Some(&mut new.widget_row), pos + Vec2::Y * 20., selected)
+                    .y;
             }
         }
 

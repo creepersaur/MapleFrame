@@ -9,15 +9,17 @@ pub struct WidgetRow {
     pub offset: Vec2,
     pub direction: Vec2,
     pub margin: f32,
+    pub length: f32,
 }
 impl WidgetRow {
-    pub fn new(direction: Vec2, font: Option<Font>, offset: Vec2) -> Self {
+    pub fn new(direction: Vec2, font: Option<Font>, offset: Vec2, length: f32) -> Self {
         Self {
             widget_holder: WidgetHolder::new(direction),
             font,
             offset,
             direction,
             margin: 5.,
+            length,
         }
     }
 
@@ -111,7 +113,12 @@ impl WidgetRow {
     }
 
     pub fn row(&mut self, mut handler: impl FnMut(&mut WidgetRow)) {
-        let x = self.add_widget(WidgetRow::new(Vec2::X, self.font.clone(), Vec2::ZERO));
+        let x = self.add_widget(WidgetRow::new(
+            Vec2::X,
+            self.font.clone(),
+            Vec2::ZERO,
+            self.length - self.offset.x,
+        ));
         x.widget_holder.clear();
         handler(x);
     }
@@ -121,9 +128,26 @@ impl WidgetRow {
             Vec2::Y,
             self.font.clone(),
             Vec2::X * spacing,
+            self.length - self.offset.x,
         ));
         x.widget_holder.clear();
         handler(x);
+    }
+
+    pub fn tree<R>(
+        &mut self,
+        text: impl ToString,
+        default: bool,
+        mut handler: impl FnMut(&mut WidgetRow) -> R,
+    ) -> R {
+        let x = self.add_widget(Tree::new(
+            text,
+            self.font.clone(),
+            default,
+            self.length - self.offset.x,
+        ));
+        x.widget_row.widget_holder.clear();
+        handler(&mut x.widget_row)
     }
 
     pub fn checkbox(&mut self, text: impl ToString, initial_checked: bool) -> &mut CheckBox {

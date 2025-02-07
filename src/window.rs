@@ -64,9 +64,9 @@ impl Window {
         }
     }
 
-	pub fn is_once(&mut self) -> bool {
-		self.once
-	}
+    pub fn is_once(&mut self) -> bool {
+        self.once
+    }
 
     pub fn set_title(&mut self, title: impl ToString) {
         self.title = title.to_string();
@@ -348,10 +348,15 @@ impl Window {
 
     pub fn clamp(&mut self) {
         self.rect.x = clamp_f32(self.rect.x, 0., screen_width() - self.rect.w);
-        self.rect.y = clamp_f32(self.rect.y, 0., screen_height() - match self.minimized {
-			true => 20.,
-			_ => self.rect.h
-		});
+        self.rect.y = clamp_f32(
+            self.rect.y,
+            0.,
+            screen_height()
+                - match self.minimized {
+                    true => 20.,
+                    _ => self.rect.h,
+                },
+        );
     }
 
     pub fn handle_close(&mut self) {
@@ -452,7 +457,7 @@ impl Window {
         self.add_widget(Button::new(text, self.font.clone()))
     }
 
-	pub fn checkbox(&mut self, text: impl ToString, initial_checked: bool) -> &mut CheckBox {
+    pub fn checkbox(&mut self, text: impl ToString, initial_checked: bool) -> &mut CheckBox {
         self.add_widget(CheckBox::new(text, self.font.clone(), initial_checked))
     }
 
@@ -461,7 +466,12 @@ impl Window {
     }
 
     pub fn row<R>(&mut self, mut handler: impl FnMut(&mut WidgetRow) -> R) -> R {
-        let x = self.add_widget(WidgetRow::new(Vec2::X, self.font.clone(), Vec2::ZERO));
+        let x = self.add_widget(WidgetRow::new(
+            Vec2::X,
+            self.font.clone(),
+            Vec2::ZERO,
+            self.rect.w,
+        ));
         x.widget_holder.clear();
         handler(x)
     }
@@ -471,12 +481,18 @@ impl Window {
             Vec2::Y,
             self.font.clone(),
             Vec2::X * spacing,
+            self.rect.w,
         ));
         x.widget_holder.clear();
         handler(x)
     }
 
-	pub fn tree<R>(&mut self, text: impl ToString, default: bool, mut handler: impl FnMut(&mut WidgetRow) -> R) -> R {
+    pub fn tree<R>(
+        &mut self,
+        text: impl ToString,
+        default: bool,
+        mut handler: impl FnMut(&mut WidgetRow) -> R,
+    ) -> R {
         let x = self.add_widget(Tree::new(text, self.font.clone(), default, self.rect.w));
         x.widget_row.widget_holder.clear();
         handler(&mut x.widget_row)

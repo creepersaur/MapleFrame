@@ -13,7 +13,7 @@ async fn main() {
     loop {
         windows.begin("explorer", |win| {
             win.set_position((0., 0.));
-            win.set_size((250., screen_height() / 2.));
+            win.set_size((250., screen_height() / 3.));
             bald(win);
 
             win.row(|row| {
@@ -68,8 +68,8 @@ async fn main() {
         });
 
         windows.begin("properties", |win| {
-            win.set_position((0., screen_height() / 2.));
-            win.set_size((250., screen_height() / 2.));
+            win.set_position((0., screen_height() / 3.));
+            win.set_size((250., screen_height() / 1.5));
             bald(win);
 
             win.separator();
@@ -107,6 +107,14 @@ async fn main() {
             win.tree("Hello world", false, |tree| {
 				tree.text("Hello world");
 				tree.button("Foo bar");
+				tree.tree("Hello world", false, |tree| {
+					tree.text("Hello world");
+					tree.button("Foo bar");
+					tree.tree("Hello world", false, |tree| {
+						tree.text("Hello world");
+						tree.button("Foo bar");
+					});
+				});
 			});
         });
 
