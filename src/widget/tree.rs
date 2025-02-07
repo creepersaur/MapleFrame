@@ -1,50 +1,59 @@
 use crate::window_style::WindowStyle;
 
-use super::Widget;
+use super::{Widget, WidgetRow};
 use macroquad::prelude::*;
 
 #[derive(Clone)]
-pub struct CheckBox {
+pub struct Tree {
     pub text: String,
     pub hovering: bool,
     pub pressed: bool,
     pub clicked: bool,
-    pub value: bool,
+    pub open: bool,
     pub font: Option<Font>,
+    pub widget_row: WidgetRow,
+	pub length: f32,
 
     tried_clicking: bool,
 }
 
-impl CheckBox {
-    pub fn new(text: impl ToString, font: Option<Font>, default: bool) -> Self {
+impl Tree {
+    pub fn new(text: impl ToString, font: Option<Font>, default: bool, length: f32) -> Self {
         Self {
             text: text.to_string(),
-            font,
+            font: font.clone(),
             tried_clicking: false,
+			length,
 
             hovering: false,
             pressed: false,
             clicked: false,
-            value: default,
+            open: default,
+            widget_row: WidgetRow::new(Vec2::Y, font, Vec2::X * 24.),
         }
     }
 }
 
-impl Widget for CheckBox {
+impl Widget for Tree {
     fn as_any(&mut self) -> &mut dyn std::any::Any {
         self
     }
 
     fn get_type(&self) -> &str {
-        "checkbox"
+        "tree"
     }
 
-    fn render(&mut self, pos: Vec2, _: Vec2, style: &WindowStyle) {
-        let btn_color = style.button_bg_color;
-        let value_color = style.checkbox_checked;
+    fn render(&mut self, pos: Vec2, delta: Vec2, style: &WindowStyle) {
+		// DRAW ROW
+        if self.open {
+            self.widget_row.render(pos + Vec2::Y * 20., delta, style);
+        }
+		
+        let btn_color = style.tree_closed;
+        let open_color = style.tree_open;
 
-        let bg_color = match self.value {
-            true => value_color,
+        let bg_color = match self.open {
+            true => open_color,
             _ => match (self.hovering, self.pressed) {
                 (true, false) => Color::from_vec(btn_color.to_vec() + Vec4::splat(0.1)),
                 (_, true) => Color::from_vec(btn_color.to_vec() + Vec4::splat(0.2)),
@@ -52,47 +61,23 @@ impl Widget for CheckBox {
             },
         };
 
-		// BACKGROUND
-        draw_rectangle(pos.x, pos.y, 20., 20., bg_color);
+        draw_rectangle(pos.x, pos.y, self.length - 10., 20., bg_color);
 
-		// OUTLINE
         draw_rectangle_lines(
             pos.x,
             pos.y,
-            20.,
+            self.length - 10.,
             20.,
             1.,
             match (self.hovering, self.pressed) {
-                (_, true) => style.button_selected_outline,
+                (_, true) => WHITE,
                 _ => style.button_outline_color,
             },
         );
 
-		// CHECKMARK
-		if self.value {
-			draw_line(
-				pos.x + 5.,
-				pos.y + 11.,
-				pos.x + 10.,
-				pos.y + 15.,
-				2.,
-				style.checkbox_check,
-			);
-	
-			draw_line(
-				pos.x + 15.,
-				pos.y + 5.,
-				pos.x + 10.,
-				pos.y + 15.,
-				2.,
-				style.checkbox_check,
-			);
-		}
-
-		// TEXT
         draw_text_ex(
             &self.text,
-            pos.x.floor() + 25.,
+            pos.x + 20.,
             pos.y.floor() + 14.,
             TextParams {
                 font: self.font.as_ref(),
@@ -104,17 +89,28 @@ impl Widget for CheckBox {
                 ..Default::default()
             },
         );
+
+        // MINIMIZE TRIANGLE
+        draw_minimize(self.open, pos, style);
     }
 
     fn update(&mut self, other: Option<&mut dyn Widget>, pos: Vec2, selected: bool) -> Vec2 {
+        let mut height = 20.;
         if let Some(other) = other {
             let new = other.as_any().downcast_mut::<Self>().unwrap();
             self.text = new.text.clone();
-            // new.clicked = self.clicked;
+
+            // UPDATE ROW
+            if self.open {
+                height += self.widget_row.update(
+                    Some(&mut new.widget_row),
+                    pos + Vec2::Y * 20.,
+                    selected,
+                ).y;
+            }
         }
 
-        let dim = measure_text(&self.text, self.font.as_ref(), 16, 1.);
-        let rect = Rect::new(pos.x, pos.y, dim.width + 30., 20.);
+        let rect = Rect::new(pos.x, pos.y, self.length - 10., 20.);
 
         if self.tried_clicking && selected {
             self.tried_clicking = false;
@@ -133,7 +129,7 @@ impl Widget for CheckBox {
                 }
             } else if is_mouse_button_released(MouseButton::Left) && self.pressed && selected {
                 self.clicked = true;
-                self.value = !self.value;
+                self.open = !self.open;
             }
         } else {
             self.hovering = false;
@@ -143,6 +139,32 @@ impl Widget for CheckBox {
             self.pressed = false;
         }
 
-        vec2(dim.width + 30., 20.)
+        vec2(self.length - 10., height)
+    }
+}
+
+pub fn draw_minimize(open: bool, pos: Vec2, style: &WindowStyle) {
+    let minimize_rect = Rect::new(pos.x + 5., pos.y + 5., 10., 10.);
+
+    if !open {
+        draw_triangle(
+            vec2(pos.x + 7., pos.y + 5.),
+            vec2(pos.x + 17., pos.y + 10.),
+            vec2(pos.x + 7., pos.y + 15.),
+            match minimize_rect.contains(mouse_position().into()) {
+                true => Color::from_vec(style.minimize_triangle.to_vec() + Vec4::splat(0.2)),
+                _ => style.minimize_triangle,
+            },
+        )
+    } else {
+        draw_triangle(
+            vec2(pos.x + 7., pos.y + 7.),
+            vec2(pos.x + 17., pos.y + 7.),
+            vec2(pos.x + 12., pos.y + 15.),
+            match minimize_rect.contains(mouse_position().into()) {
+                true => Color::from_vec(style.minimize_triangle.to_vec() + Vec4::splat(0.2)),
+                _ => style.minimize_triangle,
+            },
+        )
     }
 }

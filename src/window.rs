@@ -348,7 +348,10 @@ impl Window {
 
     pub fn clamp(&mut self) {
         self.rect.x = clamp_f32(self.rect.x, 0., screen_width() - self.rect.w);
-        self.rect.y = clamp_f32(self.rect.y, 0., screen_height() - self.rect.h);
+        self.rect.y = clamp_f32(self.rect.y, 0., screen_height() - match self.minimized {
+			true => 20.,
+			_ => self.rect.h
+		});
     }
 
     pub fn handle_close(&mut self) {
@@ -471,6 +474,12 @@ impl Window {
         ));
         x.widget_holder.clear();
         handler(x)
+    }
+
+	pub fn tree<R>(&mut self, text: impl ToString, default: bool, mut handler: impl FnMut(&mut WidgetRow) -> R) -> R {
+        let x = self.add_widget(Tree::new(text, self.font.clone(), default, self.rect.w));
+        x.widget_row.widget_holder.clear();
+        handler(&mut x.widget_row)
     }
 }
 

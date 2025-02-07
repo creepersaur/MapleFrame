@@ -8,6 +8,7 @@ pub struct WidgetRow {
     pub font: Option<Font>,
     pub offset: Vec2,
     pub direction: Vec2,
+    pub margin: f32,
 }
 impl WidgetRow {
     pub fn new(direction: Vec2, font: Option<Font>, offset: Vec2) -> Self {
@@ -16,6 +17,7 @@ impl WidgetRow {
             font,
             offset,
             direction,
+            margin: 5.,
         }
     }
 
@@ -27,7 +29,7 @@ impl WidgetRow {
             if let Some(x) = self.widget_holder.previous[x].as_any().downcast_mut::<T>() {
                 return x;
             } else {
-				println!("{}", self.widget_holder.widgets[x].get_type());
+                println!("{}", self.widget_holder.widgets[x].get_type());
                 return self.widget_holder.widgets[x]
                     .as_any()
                     .downcast_mut::<T>()
@@ -52,38 +54,41 @@ impl Widget for WidgetRow {
     }
 
     fn render(&mut self, pos: Vec2, delta: Vec2, style: &WindowStyle) {
-		// VERTICAL LINE
-		draw_rectangle(
-			(pos.x + self.offset.x - 15.),
-			pos.y - 2.,
-			2.,
-			14.,
-			style.indent_color
-		);
+        if self.offset.x > 0. {
+            // VERTICAL LINE
+            draw_rectangle(
+                (pos.x + self.offset.x - 15.),
+                pos.y - 2.,
+                2.,
+                14.,
+                style.indent_color,
+            );
 
-		// HORIZONTAL LINE
-		draw_rectangle(
-			(pos.x + self.offset.x - 13.),
-			pos.y + 10.,
-			(self.offset.x - 11.).clamp(0., screen_width()),
-			2.,
-			style.indent_color
-		);
+            // HORIZONTAL LINE
+            draw_rectangle(
+                (pos.x + self.offset.x - 13.),
+                pos.y + 10.,
+                (self.offset.x - 11.).clamp(0., screen_width()),
+                2.,
+                style.indent_color,
+            );
+        }
 
-		self.widget_holder.add_delta_position(delta);
+        self.widget_holder.add_delta_position(delta);
         self.widget_holder.render(style, delta);
     }
 
     fn update(&mut self, other: Option<&mut dyn Widget>, pos: Vec2, selected: bool) -> Vec2 {
-		if let Some(other) = other {
+        if let Some(other) = other {
             let new = other.as_any().downcast_ref::<Self>().unwrap();
             self.offset = new.offset.clone();
-			self.direction = new.direction;
+            self.direction = new.direction;
         }
 
-		self.widget_holder.fill_direction = self.direction;
+        self.widget_holder.margin = self.margin;
+        self.widget_holder.fill_direction = self.direction;
         let pos = self.widget_holder.update(pos + self.offset, selected);
-		
+
         if self.direction == Vec2::Y {
             Vec2::Y * pos - 5.
         } else {
@@ -121,7 +126,7 @@ impl WidgetRow {
         handler(x);
     }
 
-	pub fn checkbox(&mut self, text: impl ToString, initial_checked: bool) -> &mut CheckBox {
+    pub fn checkbox(&mut self, text: impl ToString, initial_checked: bool) -> &mut CheckBox {
         self.add_widget(CheckBox::new(text, self.font.clone(), initial_checked))
     }
 }

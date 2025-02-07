@@ -8,12 +8,14 @@ pub use separator::Separator;
 pub use text::Text;
 pub use widget_holder::WidgetHolder;
 pub use widget_row::WidgetRow;
+pub use tree::Tree;
 
 mod button;
 mod checkbox;
 mod separator;
 mod text;
 mod widget_holder;
+mod tree;
 mod widget_row;
 
 // WIDGET

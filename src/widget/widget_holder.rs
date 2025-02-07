@@ -7,6 +7,7 @@ pub struct WidgetHolder {
     pub previous: Vec<Box<dyn Widget>>,
     pub positions: Vec<Vec2>,
     pub fill_direction: Vec2,
+    pub margin: f32,
 }
 
 impl WidgetHolder {
@@ -16,6 +17,7 @@ impl WidgetHolder {
             previous: vec![],
             positions: vec![],
             fill_direction,
+            margin: 5.,
         }
     }
 
@@ -28,7 +30,6 @@ impl WidgetHolder {
         let old_pos = pos.clone();
 
         self.positions.clear();
-        let margin = 5.;
         let mut i = 0;
 
         loop {
@@ -36,20 +37,22 @@ impl WidgetHolder {
                 break;
             }
             if self.previous.len() > i {
-                let old = &mut self.previous[i];
-
-                if self.widgets[i].get_type() == old.get_type() {
+                if self.widgets[i].get_type() == self.previous[i].get_type() {
+                    let old = &mut self.previous[i];
                     self.positions.push(pos);
                     pos += self.fill_direction
                         * old.update(Some(&mut *self.widgets[i]), pos, selected);
                     self.widgets[i] = old.clone();
+                } else {
+                    self.positions.push(pos);
+                    pos += self.fill_direction * self.widgets[i].update(None, pos, selected);
                 }
             } else {
                 self.positions.push(pos);
                 pos += self.fill_direction * self.widgets[i].update(None, pos, selected);
             }
 
-            pos += self.fill_direction * margin;
+            pos += self.fill_direction * self.margin;
             i += 1;
         }
 

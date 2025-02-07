@@ -77,6 +77,7 @@ impl WindowManager {
     pub fn handle_window(win: &mut Window, mut handler: impl FnMut(&mut Window) -> ()) {
         win.widget_holder.clear();
         handler(win);
+        win.clamp();
 
         win.widget_holder.update(
             vec2(

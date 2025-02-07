@@ -5,6 +5,3 @@ edition = "2021"
 
 [dependencies]
 macroquad = "0.4.13"
-
-[profile.dev]
-opt-level = 3
