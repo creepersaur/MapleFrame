@@ -31,25 +31,30 @@ impl WidgetHolder {
 
         self.positions.clear();
         let mut i = 0;
-		let mut prev_i = 0;
 
         loop {
             if i >= self.widgets.len() {
                 break;
             }
-            if self.previous.len() > i {
-                if self.widgets[i].equate(&mut *self.previous[prev_i]) {
-                    let old = &mut self.previous[prev_i];
-                    self.positions.push(pos);
-                    pos += self.fill_direction
-                        * old.update(Some(&mut *self.widgets[i]), pos, selected);
-                    self.widgets[i] = old.clone();
-					prev_i += 1;
-                } else {
-                    self.positions.push(pos);
-                    pos += self.fill_direction * self.widgets[i].update(None, pos, selected);
+
+            let mut found_match = false;
+            if self.previous.len() > 0 {
+                for (prev_i, old) in self.previous.iter_mut().enumerate() {
+                    if self.widgets[i].equate(&mut **old) {
+                        // Found a match, update the widget and remove it from previous
+                        self.positions.push(pos);
+                        pos += self.fill_direction
+                            * old.update(Some(&mut *self.widgets[i]), pos, selected);
+                        self.widgets[i] = old.clone();
+                        self.previous.remove(prev_i);
+                        found_match = true;
+                        break;
+                    }
                 }
-            } else {
+            }
+
+            if !found_match {
+                // No match found, update the widget with None
                 self.positions.push(pos);
                 pos += self.fill_direction * self.widgets[i].update(None, pos, selected);
             }
