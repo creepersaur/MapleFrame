@@ -39,6 +39,10 @@ impl Widget for Tree {
         self
     }
 
+	fn equate(&self, other: &mut dyn Widget) -> bool {
+		self.get_type() == other.get_type()
+	}
+
     fn get_type(&self) -> &str {
         "tree"
     }
@@ -100,6 +104,7 @@ impl Widget for Tree {
             let new = other.as_any().downcast_mut::<Self>().unwrap();
             self.text = new.text.clone();
 			new.widget_row = self.widget_row.clone();
+			new.open = self.open;
 
             // UPDATE ROW
             if self.open {

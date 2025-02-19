@@ -24,6 +24,7 @@ pub trait Widget: WidgetClone + Any {
     fn get_type(&self) -> &str;
     fn as_any(&mut self) -> &mut dyn Any;
     fn update(&mut self, other: Option<&mut dyn Widget>, pos: Vec2, selected: bool) -> Vec2;
+	fn equate(&self, other: &mut dyn Widget) -> bool;
 }
 
 pub trait WidgetClone {

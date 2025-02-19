@@ -31,18 +31,20 @@ impl WidgetHolder {
 
         self.positions.clear();
         let mut i = 0;
+		let mut prev_i = 0;
 
         loop {
             if i >= self.widgets.len() {
                 break;
             }
             if self.previous.len() > i {
-                if self.widgets[i].get_type() == self.previous[i].get_type() {
-                    let old = &mut self.previous[i];
+                if self.widgets[i].equate(&mut *self.previous[prev_i]) {
+                    let old = &mut self.previous[prev_i];
                     self.positions.push(pos);
                     pos += self.fill_direction
                         * old.update(Some(&mut *self.widgets[i]), pos, selected);
                     self.widgets[i] = old.clone();
+					prev_i += 1;
                 } else {
                     self.positions.push(pos);
                     pos += self.fill_direction * self.widgets[i].update(None, pos, selected);

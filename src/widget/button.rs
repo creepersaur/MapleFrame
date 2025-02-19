@@ -33,6 +33,10 @@ impl Widget for Button {
         self
     }
 
+	fn equate(&self, other: &mut dyn Widget) -> bool {
+		self.get_type() == other.get_type()
+	}
+
     fn get_type(&self) -> &str {
         "button"
     }

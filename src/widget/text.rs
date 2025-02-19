@@ -25,6 +25,10 @@ impl Widget for Text {
         self
     }
 
+	fn equate(&self, other: &mut dyn Widget) -> bool {
+		self.get_type() == other.get_type()
+	}
+
     fn render(&mut self, pos: Vec2, _: Vec2,  _: &WindowStyle) {
         draw_text_ex(
             &self.text,

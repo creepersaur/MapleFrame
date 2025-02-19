@@ -2,7 +2,7 @@
 use std::any::Any;
 
 use crate::{widget::*, window_style::WindowStyle};
-use macroquad::prelude::*;
+use macroquad::{miniquad::window::set_mouse_cursor, prelude::*};
 
 #[derive(Clone)]
 pub struct Window {
@@ -390,29 +390,37 @@ impl Window {
     }
 
     pub fn handle_resize(&mut self) {
-        if !self.resizable || self.minimized || !self.selected {
-            self.resizing = false;
-            return;
-        }
-
-        let resize_rect = Rect::new(
+		let resize_rect = Rect::new(
             self.rect.x + self.rect.w - 15.,
             self.rect.y + self.rect.h - 15.,
             15.,
             15.,
         );
 
-        if resize_rect.contains(mouse_position().into()) {
-            if is_mouse_button_pressed(MouseButton::Left) {
+        let contains = resize_rect.contains(mouse_position().into());
+		if contains {
+			set_mouse_cursor(miniquad::CursorIcon::NWSEResize);
+        }
+		
+		if !self.resizable || self.minimized || !self.selected {
+            self.resizing = false;
+            return;
+        }
+
+		if contains {
+			if is_mouse_button_pressed(MouseButton::Left) {
                 self.resizing = true;
                 self.resize_start = (vec2(self.rect.w, self.rect.h), mouse_position().into())
             }
-        }
+		}
+
         if is_mouse_button_released(MouseButton::Left) {
             self.resizing = false;
         }
 
         if self.resizing {
+			set_mouse_cursor(miniquad::CursorIcon::NWSEResize);
+			
             let delta = vec2(mouse_position().0, mouse_position().1) - self.resize_start.1;
             self.rect.w = self.resize_start.0.x + delta.x;
             self.rect.h = self.resize_start.0.y + delta.y;

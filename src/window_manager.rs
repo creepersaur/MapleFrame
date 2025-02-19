@@ -1,9 +1,5 @@
 #![allow(unused)]
-use macroquad::{
-    math::vec2,
-    text::{load_ttf_font, Font},
-    time::get_time,
-};
+use macroquad::{miniquad::window::set_mouse_cursor, prelude::*};
 use std::collections::HashMap;
 
 use crate::window::*;
@@ -44,6 +40,8 @@ impl WindowManager {
     }
 
     pub fn update_windows(&mut self) {
+		set_mouse_cursor(miniquad::CursorIcon::Default);
+		
         let mut windows = self.windows.values_mut().collect::<Vec<&mut Window>>();
         windows.sort_by(|a, b| {
             (get_time() - a.time_since_selected).total_cmp(&(get_time() - b.time_since_selected))
@@ -66,6 +64,8 @@ impl WindowManager {
 
         for i in windows.iter_mut() {
             i.render();
+			
+			set_default_camera();
         }
     }
 
